@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love 3D Floating Words</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: radial-gradient(circle at center, #ffafcc 0%, #a2d2ff 100%);
+      perspective: 1000px;
+    }
+
+    .popup {
+      position: absolute;
+      padding: 10px 18px;
+      background-color: #ffe6f0; /* màu hồng pastel rõ nét */
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-weight: bold;
+      font-size: 15px;
+      color: #d63384;
+      border-radius: 10px;
+      border: 1px solid #ffc0cb;
+      box-shadow: 0 2px 8px rgba(255, 105, 180, 0.4);
+      animation: float 30s linear infinite, fadeInOut 5s ease forwards;
+      transform-style: flat;
+      white-space: nowrap;
+      max-width: 75vw;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translate3d(0, 0, 0) rotate(0deg);
+      }
+      100% {
+        transform: translate3d(
+          calc(var(--x) * 1vw),
+          calc(var(--y) * 1vh),
+          calc(var(--z) * 1px)
+        ) rotate(360deg);
+      }
+    }
+
+    @keyframes fadeInOut {
+      0% {
+        opacity: 0;
+      }
+      20% {
+        opacity: 1;
+      }
+      80% {
+        opacity: 1;
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    .heart {
+      position: fixed;
+      width: 20px;
+      height: 20px;
+      background-color: pink;
+      transform: rotate(45deg);
+      animation: fall 6s linear infinite;
+      top: -20px;
+      pointer-events: none;
+    }
+
+    .heart::before,
+    .heart::after {
+      content: "";
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      background-color: pink;
+      border-radius: 50%;
+    }
+
+    .heart::before {
+      top: -10px;
+      left: 0;
+    }
+
+    .heart::after {
+      left: -10px;
+      top: 0;
+    }
+
+    @keyframes fall {
+      to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    .dialog {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #F8C7DA;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      font-size: 22px;
+      color: white;
+      text-align: center;
+      box-shadow: 0 0 15px pink;
+      z-index: 1000;
+      max-width: 80%;
+    }
+  </style>
+</head>
+<body>
+  <div id="startDialog" class="dialog">✨ Click vào đây để bắt đầu điều kỳ diệu ✨</div>
+
+  <audio id="backgroundMusic" src="assets/music.mp3" loop></audio>
+
+  <script>
+    const messages = [
+      "Sinh Nhật Vui Vẻ ❤️",
+      "Tiên xinh gái !",
+      "I Love You 💖",
+      "Yêu Tiên",
+      "Càng Ngày Càng Xinh"
+    ];
+    let msgIndex = 0;
+
+    const colors = ["#ff69b4", "#d63384", "#ff4da6", "#fff"];
+    const dialog = document.getElementById("startDialog");
+    const audio = document.getElementById("backgroundMusic");
+
+    function createPopup() {
+      const popup = document.createElement("div");
+      popup.className = "popup";
+      popup.textContent = messages[msgIndex];
+      msgIndex = (msgIndex + 1) % messages.length;
+      popup.style.color = colors[Math.floor(Math.random() * colors.length)];
+
+      const x = Math.random() * 200 - 100;
+      const y = Math.random() * 200 - 100;
+      const z = Math.random() * 1000 - 500;
+
+      popup.style.setProperty("--x", x);
+      popup.style.setProperty("--y", y);
+      popup.style.setProperty("--z", z);
+
+      popup.style.left = `${Math.random() * window.innerWidth}px`;
+      popup.style.top = `${Math.random() * window.innerHeight}px`;
+
+      document.body.appendChild(popup);
+
+      // Xoá popup sau 5s
+      setTimeout(() => popup.remove(), 5000);
+    }
+
+    function createHeart() {
+      const heart = document.createElement("div");
+      heart.className = "heart";
+      heart.style.left = `${Math.random() * 100}vw`;
+      heart.style.animationDuration = `${4 + Math.random() * 2}s`;
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 6000);
+    }
+
+    function startLoopingPopups() {
+      setInterval(createPopup, 300);
+    }
+
+    function startFallingHearts() {
+      setInterval(createHeart, 500);
+    }
+
+    function enterFullscreen() {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    }
+
+    document.addEventListener("click", function startExperience() {
+      dialog.style.display = "none";
+      audio.play().catch(error => console.log("Lỗi phát nhạc:", error));
+      enterFullscreen();
+      startLoopingPopups();
+      startFallingHearts();
+      document.removeEventListener("click", startExperience);
+    });
+  </script>
+</body>
+</html>
